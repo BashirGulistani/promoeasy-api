@@ -1,72 +1,88 @@
-# OpenAPI Template
+# PromoStandards Simplifier API (Unified Catalog + Product Search)
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/chanfana-openapi-template)
+A single REST API that hides PromoStandards SOAP complexity behind one clean endpoint.
 
-![OpenAPI Template Preview](https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/91076b39-1f5b-46f6-7f14-536a6f183000/public)
+This project is built for **distributors with little or no IT support** who still need fast, reliable access to supplier catalogs, product details, pricing, and inventory—without building/maintaining SOAP clients, envelopes, WSDL quirks, or vendor-specific logic.
 
-<!-- dash-content-start -->
+---
 
-This is a Cloudflare Worker with OpenAPI 3.1 Auto Generation and Validation using [chanfana](https://github.com/cloudflare/chanfana) and [Hono](https://github.com/honojs/hono).
+## Why this exists
 
-This is an example project made to be used as a quick start into building OpenAPI compliant Workers that generates the
-`openapi.json` schema automatically from code and validates the incoming request to the defined parameters or request body.
+PromoStandards is powerful, but in practice it’s painful:
 
-This template includes various endpoints, a D1 database, and integration tests using [Vitest](https://vitest.dev/) as examples. In endpoints, you will find [chanfana D1 AutoEndpoints](https://chanfana.com/endpoints/auto/d1) and a [normal endpoint](https://chanfana.com/endpoints/defining-endpoints) to serve as examples for your projects.
+- Every supplier has slightly different SOAP behavior
+- WSDL versions differ (`v1`, `v2`, sometimes mixed)
+- Fields aren’t consistent (colors, categories, pricing tiers, FOB, etc.)
+- Building/hosting SOAP integrations takes time and constant maintenance
 
-Besides being able to see the OpenAPI schema (openapi.json) in the browser, you can also extract the schema locally no hassle by running this command `npm run schema`.
+**This API turns all that into one simple call.**
 
-<!-- dash-content-end -->
+You send filters like `brand`, `keyword`, `category`, `minPrice`, `maxPrice`, `minQty`, `shipFrom`, etc.  
+We handle:
+- supplier selection
+- SOAP calls + retries
+- schema normalization
+- dedupe + ranking
+- paging
+- consistent output
 
-> [!IMPORTANT]
-> When using C3 to create this project, select "no" when it asks if you want to deploy. You need to follow this project's [setup steps](https://github.com/cloudflare/templates/tree/main/openapi-template#setup-steps) before deploying.
+---
 
-## Getting Started
+## What you get
 
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
+### ✅ One endpoint for product discovery
+Search across one supplier or many, using common filters.
 
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/openapi-template
-```
+### ✅ Normalized product schema
+Same field names across suppliers:
+- images
+- pricing tiers
+- colors
+- sizes
+- categories
+- shipping / FOB
+- supplier codes
+- availability/inventory (when supported)
 
-A live public deployment of this template is available at [https://openapi-template.templates.workers.dev](https://openapi-template.templates.workers.dev)
+### ✅ Distributor-friendly integration
+- No SOAP code
+- No WSDL parsing
+- No XML envelopes
+- No vendor-specific edge cases
 
-## Setup Steps
+---
 
-1. Install the project dependencies with a package manager of your choice:
-   ```bash
-   npm install
-   ```
-2. Create a [D1 database](https://developers.cloudflare.com/d1/get-started/) with the name "openapi-template-db":
-   ```bash
-   npx wrangler d1 create openapi-template-db
-   ```
-   ...and update the `database_id` field in `wrangler.json` with the new database ID.
-3. Run the following db migration to initialize the database (notice the `migrations` directory in this project):
-   ```bash
-   npx wrangler d1 migrations apply DB --remote
-   ```
-4. Deploy the project!
-   ```bash
-   npx wrangler deploy
-   ```
-5. Monitor your worker
-   ```bash
-   npx wrangler tail
-   ```
+## Core endpoint
 
-## Testing
+### `POST /v1/products/search`
 
-This template includes integration tests using [Vitest](https://vitest.dev/). To run the tests locally:
+Search products using filters instead of writing supplier-specific integrations.
 
-```bash
-npm run test
-```
+#### Example request
 
-Test files are located in the `tests/` directory, with examples demonstrating how to test your endpoints and database interactions.
+```json
+{
+  "q": "vacuum insulated bottle",
+  "suppliers": ["PCNA", "GEM", "HIT"],
+  "brand": "CamelBak",
+  "limit": 24,
+  "page": 1,
 
-## Project structure
+  "filters": {
+    "category": ["Drinkware"],
+    "color": ["Black", "Navy"],
+    "min_price": 5.00,
+    "max_price": 25.00,
+    "min_qty": 50,
+    "max_qty": 500,
+    "imprint_methods": ["Laser Engraved", "Screen Print"],
+    "ship_from": ["CA", "TX"],
+    "eco": true,
+    "rush": true
+  },
 
-1. Your main router is defined in `src/index.ts`.
-2. Each endpoint has its own file in `src/endpoints/`.
-3. Integration tests are located in the `tests/` directory.
-4. For more information read the [chanfana documentation](https://chanfana.com/), [Hono documentation](https://hono.dev/docs), and [Vitest documentation](https://vitest.dev/guide/).
+  "sort": {
+    "by": "relevance",
+    "order": "desc"
+  }
+}
