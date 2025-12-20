@@ -30,10 +30,10 @@ We handle:
 
 ## What you get
 
-### ✅ One endpoint for product discovery
+### One endpoint for product discovery
 Search across one supplier or many, using common filters.
 
-### ✅ Normalized product schema
+### Normalized product schema
 Same field names across suppliers:
 - images
 - pricing tiers
@@ -44,7 +44,7 @@ Same field names across suppliers:
 - supplier codes
 - availability/inventory (when supported)
 
-### ✅ Distributor-friendly integration
+### Distributor-friendly integration
 - No SOAP code
 - No WSDL parsing
 - No XML envelopes
