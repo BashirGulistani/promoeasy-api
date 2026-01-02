@@ -21,7 +21,7 @@ PromoStandards is powerful, but in practice it’s painful:
 - Fields aren’t consistent (colors, categories, pricing tiers, FOB, etc.)
 - Building/hosting SOAP integrations takes time and constant maintenance
 - There are 15 different endpoints offering different services. Huge Complexixty. Scripts should be written and maintained using SOAP XML.
-- Some of these services are inventory, Invoice, Media Content, Order Shipment Notification, Order Status, Product Data
+- Some of these services are inventory, Invoice, Media Content, Order Shipment Notification, Order Status, Product Data, Product Pricing and Configuration, Purchase Order, and Company Data
 
 **This API turns all that into one simple call.**
 
