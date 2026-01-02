@@ -20,7 +20,7 @@ PromoStandards is powerful, but in practice it’s painful:
 - WSDL versions differ (`v1`, `v2`, sometimes mixed)
 - Fields aren’t consistent (colors, categories, pricing tiers, FOB, etc.)
 - Building/hosting SOAP integrations takes time and constant maintenance
-- There are 15 different endpoints offering different services. Huge Complexity
+- There are 15 different endpoints offering different services. Huge Complexixty. Scripts should be written and maintained using SOAP XML.
 
 **This API turns all that into one simple call.**
 
