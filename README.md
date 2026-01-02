@@ -4,9 +4,15 @@ A single REST API that hides PromoStandards SOAP complexity behind one clean end
 
 This project is built for **distributors with little or no IT support** who still need fast, reliable access to supplier catalogs, product details, pricing, and inventory—without building/maintaining SOAP clients, envelopes, WSDL quirks, or vendor-specific logic.
 
+
+What is PromoStandards?
+It is a volunteer-driven nonprofit organization that is committed to making supply chains and transactions smoother across the promotional products industry.
+There are several ways to leverage PromoStandards. The easiest is through a service provider that already leverages PromoStandards in their software. However, using their services / endpoints requires knowledge on setting up the backend, and familarity with different vendor data types (as most of them are not standard), and require a data engineer to clean the dataset, a software engineer to build the backend, and the whole process is costly for a distributer that wants to automate their operations.
+
+
 ---
 
-## Why this exists
+## Again, why this exists
 
 PromoStandards is powerful, but in practice it’s painful:
 
@@ -14,6 +20,7 @@ PromoStandards is powerful, but in practice it’s painful:
 - WSDL versions differ (`v1`, `v2`, sometimes mixed)
 - Fields aren’t consistent (colors, categories, pricing tiers, FOB, etc.)
 - Building/hosting SOAP integrations takes time and constant maintenance
+- There are 15 different endpoints offering different services. Huge Complexity
 
 **This API turns all that into one simple call.**
 
