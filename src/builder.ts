@@ -21,3 +21,23 @@ class UIBuilder {
     }
 }
 
+const renderModernUI = (rootId: string) => {
+    const root = document.getElementById(rootId);
+    if (!root) throw new Error("Root element not found");
+    document.body.style.margin = "0";
+    document.body.style.fontFamily = "'Inter', sans-serif";
+    document.body.style.backgroundColor = "#111";
+    document.body.style.color = "#fff";
+
+    const nav = UIBuilder.createElement('nav', {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '20px 40px',
+        borderBottom: '1px solid #333'
+    });
+
+
+};
+
+renderModernUI('app');
