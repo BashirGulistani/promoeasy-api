@@ -61,8 +61,35 @@ const renderModernUI = (rootId: string) => {
     nav.appendChild(logo);
     nav.appendChild(btn);
 
+        const hero = UIBuilder.createElement('section', {
+        height: '80vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center'
+    });
 
+    const title = UIBuilder.createElement('h1', {
+        fontSize: '4rem',
+        margin: '0 0 20px 0',
+        background: '-webkit-linear-gradient(45deg, #646cff, #ff64d6)',
+        webkitBackgroundClip: 'text',
+        webkitTextFillColor: 'transparent'
+    }, 'Build Faster.');
 
+    const sub = UIBuilder.createElement('p', {
+        fontSize: '1.2rem',
+        color: '#aaa',
+        maxWidth: '600px',
+        lineHeight: '1.6'
+    }, 'A vanilla TypeScript script');
+
+    hero.appendChild(title);
+    hero.appendChild(sub);
+    
+    root.appendChild(nav);
+    root.appendChild(hero);
 
 };
 
