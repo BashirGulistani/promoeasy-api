@@ -38,6 +38,32 @@ const renderModernUI = (rootId: string) => {
     });
 
 
+        const logo = UIBuilder.createElement('div', {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#fff'
+    }, 'SaaSify.');
+
+    const btn = UIBuilder.createElement('button', {
+        padding: '10px 20px',
+        backgroundColor: '#646cff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        fontWeight: '600',
+        transition: 'transform 0.2s'
+    }, 'Get Started');
+
+    btn.onmouseenter = () => btn.style.transform = 'scale(1.05)';
+    btn.onmouseleave = () => btn.style.transform = 'scale(1)';
+
+    nav.appendChild(logo);
+    nav.appendChild(btn);
+
+
+
+
 };
 
 renderModernUI('app');
