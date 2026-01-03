@@ -78,15 +78,8 @@ const renderModernUI = (rootId: string) => {
         webkitTextFillColor: 'transparent'
     }, 'Build Faster.');
 
-    const sub = UIBuilder.createElement('p', {
-        fontSize: '1.2rem',
-        color: '#aaa',
-        maxWidth: '600px',
-        lineHeight: '1.6'
-    }, 'A vanilla TypeScript script');
 
     hero.appendChild(title);
-    hero.appendChild(sub);
     
     root.appendChild(nav);
     root.appendChild(hero);
