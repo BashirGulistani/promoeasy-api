@@ -137,3 +137,115 @@ const injectGlobalStyles = () => {
 };
 
 
+const Icons = {
+  Moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`,
+  Sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
+  Zap: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`
+};
+
+
+const themeState = new Signal<'light' | 'dark'>('light');
+const countState = new Signal<number>(0);
+
+const Header = () => {
+  const toggleBtn = h('button', {
+    className: 'btn',
+    style: { background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)' },
+    onClick: () => {
+      const next = themeState.get() === 'light' ? 'dark' : 'light';
+      themeState.set(next);
+      document.body.setAttribute('data-theme', next);
+    }
+  });
+
+  themeState.subscribe((theme) => {
+    toggleBtn.innerHTML = theme === 'light' ? Icons.Moon : Icons.Sun;
+  });
+
+  return h('header', {
+    style: {
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      padding: '16px 24px', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border)'
+    }
+  },
+    h('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 'bold', fontSize: '20px' } },
+      h('span', { innerHTML: Icons.Zap, style: { color: 'var(--accent)' } }),
+      "Dashboard"
+    ),
+    toggleBtn
+  );
+};
+
+const StatCard = (title: string, valueSignal?: Signal<number>) => {
+  const valueDisplay = h('div', { 
+    style: { fontSize: '32px', fontWeight: 'bold', margin: '10px 0' } 
+  }, '0');
+
+  if (valueSignal) {
+    valueSignal.subscribe(val => valueDisplay.textContent = val.toString());
+  }
+
+  return h('div', { className: 'card' },
+    h('div', { style: { color: 'var(--text-secondary)', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' } }, title),
+    valueDisplay,
+    h('div', { style: { fontSize: '12px', color: '#10b981' } }, "+12.5% from last month")
+  );
+};
+
+const InteractiveSection = () => {
+  const btnInc = h('button', { className: 'btn', onClick: () => countState.set(countState.get() + 1) }, 'Increment');
+  const btnDec = h('button', { className: 'btn', style: { background: '#ef4444', marginLeft: '10px' }, onClick: () => countState.set(countState.get() - 1) }, 'Decrement');
+
+  return h('div', { className: 'card', style: { gridColumn: 'span 2' } },
+    h('h3', {}, 'Interactive Control'),
+    h('p', { style: { color: 'var(--text-secondary)', marginBottom: '20px' } }, 
+      'This section demonstrates reactive state binding without React. Click below to update the global state.'
+    ),
+    btnInc, btnDec
+  );
+};
+
+
+const Sidebar = () => {
+  const items = ['Overview', 'Analytics', 'Settings', 'Users'];
+  
+  return h('aside', {
+    style: {
+      width: '240px', background: 'var(--bg-primary)', borderRight: '1px solid var(--border)',
+      height: '100vh', position: 'sticky', top: '0', display: 'flex', flexDirection: 'column', padding: '24px'
+    }
+  },
+    ...items.map((item, index) => h('div', {
+      style: {
+        padding: '12px', borderRadius: '8px', cursor: 'pointer',
+        background: index === 0 ? 'var(--bg-secondary)' : 'transparent',
+        color: index === 0 ? 'var(--accent)' : 'var(--text-secondary)',
+        marginBottom: '4px', fontWeight: '500'
+      }
+    }, item))
+  );
+};
+
+const renderApp = (rootId: string) => {
+  injectGlobalStyles();
+  const root = document.getElementById(rootId);
+  if (!root) throw new Error("Root element not found");
+
+  const layout = h('div', { style: { display: 'flex', minHeight: '100vh' } },
+    h('div', { style: { display: window.innerWidth > 768 ? 'block' : 'none' }}, Sidebar()),
+    
+    h('main', { style: { flex: '1', display: 'flex', flexDirection: 'column' } },
+      Header(),
+      h('div', { className: 'grid' },
+        StatCard('Total Revenue'),
+        StatCard('Active Users', countState), 
+        StatCard('Bounce Rate'),
+        InteractiveSection()
+      )
+    )
+  );
+
+  root.appendChild(layout);
+};
+
+renderApp('app');
