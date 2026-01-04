@@ -268,6 +268,43 @@ function applyTheme(theme: Theme) {
 
 
 
+function Header() {
+  const toggleBtn = h("button", {
+    className: "btn",
+    style: {
+      background: "transparent",
+      color: "var(--text-primary)",
+      border: "1px solid var(--border)",
+    },
+    onClick: () => store.theme.set(store.theme.get() === "light" ? "dark" : "light"),
+  });
+
+  const cleanup = store.theme.subscribe((t) => {
+    applyTheme(t);
+    toggleBtn.innerHTML = t === "light" ? Icons.Moon : Icons.Sun;
+  });
+
+  const el = h(
+    "header",
+    { className: "header" },
+    h(
+      "div",
+      { className: "brand" },
+      h("span", { innerHTML: Icons.Zap, style: { color: "var(--accent)" } }),
+      "Dashboard"
+    ),
+    toggleBtn
+  );
+
+  return { el, cleanup };
+}
+
+
+
+
+
+
+
 
 
 
