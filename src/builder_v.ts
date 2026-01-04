@@ -30,4 +30,28 @@ function effect(run: () => void | Unsub): Unsub {
 
 
 
+type Child = Node | string | number | boolean | null | undefined;
+type StyleMap = Partial<CSSStyleDeclaration>;
+
+type Props = {
+  class?: string;
+  className?: string;
+  style?: StyleMap;
+  dataset?: Record<string, string>;
+  innerHTML?: string;
+  [key: string]: any;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
