@@ -300,6 +300,43 @@ function Header() {
 }
 
 
+function StatCard(title: string, value?: Signal<number>) {
+  const valueEl = h(
+    "div",
+    { style: { fontSize: "32px", fontWeight: "800", margin: "10px 0" } },
+    "—"
+  );
+
+  let cleanup: Unsub = () => {};
+  if (value) cleanup = value.subscribe((v) => (valueEl.textContent = String(v)));
+
+  const el = h(
+    "div",
+    { className: "card" },
+    h(
+      "div",
+      {
+        style: {
+          color: "var(--text-secondary)",
+          fontSize: "12px",
+          textTransform: "uppercase",
+          letterSpacing: "0.12em",
+          fontWeight: "750",
+        },
+      },
+      title
+    ),
+    valueEl,
+    h(
+      "div",
+      { style: { fontSize: "12px", color: "var(--good)", fontWeight: "650" } },
+      "+12.5% from last month"
+    )
+  );
+
+  return { el, cleanup };
+}
+
 
 
 
