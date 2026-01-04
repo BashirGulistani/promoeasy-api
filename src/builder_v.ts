@@ -404,9 +404,63 @@ function Sidebar() {
   return { el, cleanup: () => {} };
 }
 
+function createApp() {
+  const cleanups: Unsub[] = [];
 
+  const { el: sidebar, cleanup: c1 } = Sidebar();
+  cleanups.push(c1);
 
+  const { el: header, cleanup: c2 } = Header();
+  cleanups.push(c2);
 
+  const revenue = StatCard("Total Revenue");
+  cleanups.push(revenue.cleanup);
+
+  const users = StatCard("Active Users", store.count); 
+  cleanups.push(users.cleanup);
+
+  const bounce = StatCard("Bounce Rate");
+  cleanups.push(bounce.cleanup);
+
+  const interactive = InteractiveSection();
+  cleanups.push(interactive.cleanup);
+
+  const el = h(
+    "div",
+    { className: "layout" },
+    sidebar,
+    h(
+      "main",
+      { className: "main" },
+      header,
+      h(
+        "div",
+        { className: "grid" },
+        revenue.el,
+        users.el,
+        bounce.el,
+        interactive.el
+      )
+    )
+  );
+
+  const cleanup = () => cleanups.splice(0).forEach((fn) => fn());
+
+  return { el, cleanup };
+}
+function renderApp(rootId: string) {
+  injectGlobalStyles();
+
+  const root = document.getElementById(rootId);
+  if (!root) throw new Error(`Root element #${rootId} not found`);
+  root.innerHTML = "";
+  applyTheme(store.theme.get());
+
+  const app = createApp();
+  root.appendChild(app.el);
+  return app.cleanup;
+}
+renderApp("app");
 
 
 
