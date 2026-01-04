@@ -43,6 +43,69 @@ type Props = {
 };
 
 
+function h<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  props: Props = {},
+  ...children: (Child | Child[])[]
+): HTMLElementTagNameMap[K] {
+  const el = document.createElement(tag);
+  for (const [key, value] of Object.entries(props)) {
+    if (value === undefined || value === null) continue;
+
+    if ((key === "class" || key === "className") && typeof value === "string") {
+      el.className = value;
+      continue;
+    }
+
+    if (key === "style" && typeof value === "object") {
+      Object.assign(el.style, value);
+      continue;
+    }
+
+    if (key === "dataset" && typeof value === "object") {
+      Object.assign(el.dataset, value);
+      continue;
+    }
+
+    if (key === "innerHTML" && typeof value === "string") {
+      el.innerHTML = value;
+      continue;
+    }
+
+    if (key.startsWith("on") && typeof value === "function") {
+      const eventName = key.slice(2).toLowerCase();
+      el.addEventListener(eventName, value);
+      continue;
+    }
+    if (key in el) {
+      (el as any)[key] = value;
+    } else {
+      el.setAttribute(key, String(value));
+    }
+  }
+  const append = (node: Child) => {
+    if (node === null || node === undefined || node === false) return;
+
+    if (Array.isArray(node)) {
+      node.forEach(append as any);
+      return;
+    }
+
+    if (node instanceof Node) {
+      el.appendChild(node);
+      return;
+    }
+
+    el.appendChild(document.createTextNode(String(node)));
+  };
+
+  children.flat().forEach(append);
+
+  return el;
+}
+
+
+
 
 
 
