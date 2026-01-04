@@ -339,6 +339,73 @@ function StatCard(title: string, value?: Signal<number>) {
 
 
 
+function InteractiveSection() {
+  const inc = h(
+    "button",
+    { className: "btn", onClick: () => store.count.set(store.count.get() + 1) },
+    "Increment"
+  );
+
+  const dec = h(
+    "button",
+    {
+      className: "btn",
+      style: { background: "var(--bad)", marginLeft: "10px" },
+      onClick: () => store.count.set(store.count.get() - 1),
+    },
+    "Decrement"
+  );
+
+  const el = h(
+    "div",
+    { className: "card", style: { gridColumn: "span 2" } },
+    h("h3", { style: { margin: "0 0 10px" } }, "Interactive Control"),
+    h(
+      "p",
+      { style: { color: "var(--text-secondary)", margin: "0 0 20px" } },
+      "Reactive state binding without React. Click below to update global state."
+    ),
+    inc,
+    dec
+  );
+
+  return { el, cleanup: () => {} };
+}
+
+function Sidebar() {
+  const items = ["Overview", "Analytics", "Settings", "Users"];
+  let activeIndex = 0;
+
+  const el = h(
+    "aside",
+    { className: "sidebar" },
+    ...items.map((label, i) =>
+      h(
+        "div",
+        {
+          className: `navItem ${i === activeIndex ? "isActive" : ""}`,
+          onClick: (e: MouseEvent) => {
+            const container = (e.currentTarget as HTMLElement).parentElement;
+            if (!container) return;
+
+            // clear + set active
+            [...container.querySelectorAll(".navItem")].forEach((n) =>
+              n.classList.remove("isActive")
+            );
+            (e.currentTarget as HTMLElement).classList.add("isActive");
+            activeIndex = i;
+          },
+        },
+        label
+      )
+    )
+  );
+
+  return { el, cleanup: () => {} };
+}
+
+
+
 
 
 
