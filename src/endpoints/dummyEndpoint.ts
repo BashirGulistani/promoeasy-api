@@ -78,5 +78,24 @@ export class LogDetailsEndpoint extends OpenAPIRoute {
       },
     },
   };
+  public async handle(c: AppContext) {
+    const data = await this.getValidatedData<typeof this.schema>();
 
+    try {
+      const result = await fetchLogDetailsFromSource({
+        slug: data.params.slug,
+        name: data.body.name,
+        c,
+      });
+
+      return { success: true, result };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      return {
+        success: false,
+        error: message,
+      };
+    }
+  }
+}
 
