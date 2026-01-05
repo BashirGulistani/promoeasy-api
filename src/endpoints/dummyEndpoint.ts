@@ -57,3 +57,26 @@ export class LogDetailsEndpoint extends OpenAPIRoute {
         }),
       ),
     },
+        responses: {
+      "200": {
+        description: "Returns the log details",
+        ...contentJson({
+          success: Boolean,
+          result: z.object({
+            msg: z.string(),
+            slug: z.string(),
+            name: z.string(),
+          }),
+        }),
+      },
+      "502": {
+        description: "Upstream/source failed",
+        ...contentJson({
+          success: Boolean,
+          error: z.string(),
+        }),
+      },
+    },
+  };
+
+
