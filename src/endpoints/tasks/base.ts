@@ -1,23 +1,13 @@
 import { z } from "zod";
 
-export const task = z.object({
-  id: z.number().int(),
-  name: z.string(),
-  slug: z.string(),
-  description: z.string(),
-  completed: z.boolean(),
-  due_date: z.string().datetime(),
-});
+const zDbBoolean = z.preprocess((v) => {
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v === 1;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    if (s === "1" || s === "true" || s === "yes" || s === "y") return true;
+    if (s === "0" || s === "false" || s === "no" || s === "n" || s === "") return false;
+  }
+  return false;
+}, z.boolean());
 
-export const TaskModel = {
-  tableName: "tasks",
-  primaryKeys: ["id"],
-  schema: task,
-  serializer: (obj: Record<string, string | number | boolean>) => {
-    return {
-      ...obj,
-      completed: Boolean(obj.completed),
-    };
-  },
-  serializerObject: task,
-};
