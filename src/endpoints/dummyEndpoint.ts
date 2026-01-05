@@ -27,3 +27,33 @@ async function fetchLogDetailsFromSource(args: {
   }
   const json = (await res.json()) as unknown;
 
+
+  const parsed = z
+    .object({
+      msg: z.string(),
+      slug: z.string(),
+      name: z.string(),
+    })
+    .parse(json);
+
+  return parsed;
+}
+
+
+
+
+export class LogDetailsEndpoint extends OpenAPIRoute {
+  public schema = {
+    tags: ["Logs"],
+    summary: "Returns the log details (single-source)",
+    operationId: "log-details",
+    request: {
+      params: z.object({
+        slug: z.string(),
+      }),
+      body: contentJson(
+        z.object({
+          name: z.string(),
+        }),
+      ),
+    },
