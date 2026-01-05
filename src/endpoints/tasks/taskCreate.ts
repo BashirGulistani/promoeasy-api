@@ -11,4 +11,9 @@ const TaskCreateSchema = TaskModel.schema
     due_date: z.string().datetime().optional().nullable(),
   });
 
-
+export class TaskCreate extends D1CreateEndpoint<HandleArgs> {
+  _meta = {
+    model: TaskModel,
+    fields: TaskCreateSchema,
+  };
+}
