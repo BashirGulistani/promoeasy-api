@@ -19,3 +19,14 @@ const zDueDate = z.preprocess((v) => {
 }, z.string().datetime().nullable());
 
 
+export const TaskSchema = z.object({
+  id: z.coerce.number().int(),
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  description: z.string().default(""),
+  completed: zDbBoolean,
+  due_date: zDueDate,
+});
+
+export type Task = z.infer<typeof TaskSchema>;
+
