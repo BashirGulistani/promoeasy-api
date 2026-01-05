@@ -11,3 +11,11 @@ const zDbBoolean = z.preprocess((v) => {
   return false;
 }, z.boolean());
 
+const zDueDate = z.preprocess((v) => {
+  if (v == null || v === "") return null;
+  if (v instanceof Date) return v.toISOString();
+  if (typeof v === "string") return v;
+  return v;
+}, z.string().datetime().nullable());
+
+
