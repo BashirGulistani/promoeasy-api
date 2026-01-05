@@ -30,3 +30,12 @@ export const TaskSchema = z.object({
 
 export type Task = z.infer<typeof TaskSchema>;
 
+export const TaskModel = {
+  tableName: "tasks",
+  primaryKeys: ["id"] as const,
+  schema: TaskSchema,
+
+  fromRow(row: Record<string, unknown>): Task {
+    return TaskSchema.parse(row);
+  },
+} as const;
