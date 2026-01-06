@@ -15,3 +15,55 @@ type Env = {
 };
 
 
+type AppBindings = { Bindings: Env };
+
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonValue[] | { [k: string]: JsonValue };
+
+type ApiError = { code: number; message: string; meta?: Record<string, JsonValue> };
+type ApiResponse<T extends JsonValue = JsonValue> =
+  | { success: true; data: T; meta?: Record<string, JsonValue> }
+  | { success: false; errors: ApiError[]; meta?: Record<string, JsonValue> };
+
+type LogLevel = NonNullable<Env["LOG_LEVEL"]>;
+type Environment = NonNullable<Env["ENVIRONMENT"]>;
+
+type RequestContext = {
+  requestId: string;
+  startedAt: number;
+  ip?: string;
+  ua?: string;
+  route?: string;
+};
+
+type SafeError = {
+  status: number;
+  errors: ApiError[];
+  expose: boolean; 
+};
+
+type RateLimitState = {
+  windowStartMs: number;
+  count: number;
+};
+
+type InternalState = {
+  rl: Map<string, RateLimitState>;
+  metrics: {
+    total: number;
+    byRoute: Map<string, number>;
+    byStatus: Map<number, number>;
+    durationsMs: number[]; 
+  };
+};
+
+const state: InternalState = {
+  rl: new Map(),
+  metrics: {
+    total: 0,
+    byRoute: new Map(),
+    byStatus: new Map(),
+    durationsMs: [],
+  },
+};
+
