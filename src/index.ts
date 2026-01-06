@@ -89,6 +89,67 @@ function safeJson(value: unknown): JsonValue {
   return String(value);
 }
 
+function pickHeader(c: Context, names: string[]): string | undefined {
+  for (const n of names) {
+    const v = c.req.header(n);
+    if (v) return v;
+  }
+  return undefined;
+}
+
+function parseIntOr<T extends number>(raw: string | undefined, fallback: T): number {
+  if (!raw) return fallback;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function envOr(env: Env, key: keyof Env, fallback: string): string {
+  const v = env[key];
+  return typeof v === "string" && v.trim() ? v.trim() : fallback;
+}
+
+function envEnum<T extends string>(
+  env: Env,
+  key: keyof Env,
+  allowed: readonly T[],
+  fallback: T,
+): T {
+  const v = env[key];
+  if (typeof v === "string" && (allowed as readonly string[]).includes(v)) return v as T;
+  return fallback;
+}
+
+function makeRequestId(c: Context<AppBindings>): string {
+  const headerName = envOr(c.env, "REQUEST_ID_HEADER", "x-request-id").toLowerCase();
+  const fromHeader = c.req.header(headerName) || c.req.header("x-request-id") || c.req.header("cf-ray");
+  if (fromHeader && fromHeader.trim()) return fromHeader.trim();
+  return `${nowMs().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function setCommonHeaders(c: Context, reqId: string) {
+  c.header("x-request-id", reqId);
+  c.header("x-content-type-options", "nosniff");
+  c.header("x-frame-options", "DENY");
+  c.header("cache-control", "no-store");
+}
+
+function jsonOk<T extends JsonValue>(c: Context, data: T, meta?: Record<string, JsonValue>) {
+  const body: ApiResponse<T> = { success: true, data, ...(meta ? { meta } : {}) };
+  return c.json(body, 200);
+}
+
+function jsonErr(c: Context, status: number, errors: ApiError[], meta?: Record<string, JsonValue>) {
+  const body: ApiResponse = { success: false, errors, ...(meta ? { meta } : {}) };
+  return c.json(body, status as ContentfulStatusCode);
+}
+
+function normalizeRoutePath(pathname: string): string {
+  return pathname
+    .replace(/\/\d+(?=\/|$)/g, "/:id")
+    .replace(/\/[a-f0-9]{8,}(?=\/|$)/gi, "/:token");
+}
+
+
 
 
 
