@@ -67,3 +67,26 @@ const state: InternalState = {
   },
 };
 
+
+function nowMs(): number {
+  return Date.now();
+}
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, n));
+}
+
+function safeJson(value: unknown): JsonValue {
+  if (value === null) return null;
+  const t = typeof value;
+  if (t === "string" || t === "number" || t === "boolean") return value;
+  if (Array.isArray(value)) return value.map(safeJson);
+  if (t === "object") {
+    const out: Record<string, JsonValue> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = safeJson(v);
+    return out;
+  }
+  return String(value);
+}
+
+
