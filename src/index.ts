@@ -154,6 +154,15 @@ function hashKey(s: string): string {
   return (h >>> 0).toString(16);
 }
 
+type Logger = ReturnType<typeof createLogger>;
+
+function createLogger(env: Env) {
+  const level = envEnum<LogLevel>(env, "LOG_LEVEL", ["debug", "info", "warn", "error"] as const, "info");
+  const rank: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40 };
+  const minRank = rank[level];
+
+
+
 
 
 
