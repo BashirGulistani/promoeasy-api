@@ -148,10 +148,11 @@ function normalizeRoutePath(pathname: string): string {
     .replace(/\/\d+(?=\/|$)/g, "/:id")
     .replace(/\/[a-f0-9]{8,}(?=\/|$)/gi, "/:token");
 }
-
-
-
-
+function hashKey(s: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(16);
+}
 
 
 
