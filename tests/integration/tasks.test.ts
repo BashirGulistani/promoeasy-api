@@ -170,11 +170,79 @@ describe("Tasks API (integration)", () => {
   });
 
 
+   describe("PUT /tasks/:id", () => {
+    it("updates an existing task", async () => {
+      const id = await seedTask({
+        name: "Task to Update",
+        slug: "task-to-update",
+        description: "This task will be updated",
+        completed: false,
+        due_date: "2025-07-01T00:00:00.000Z",
+      });
+
+      const update: TaskPayload = {
+        name: "Updated Task",
+        slug: "updated-task",
+        description: "This task has been updated",
+        completed: true,
+        due_date: "2025-07-15T10:00:00.000Z",
+      };
+
+      const { res, json } = await http<TaskRecord>(`/tasks/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(update),
+      });
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+      expect((json as ApiOk<TaskRecord>).result).toEqual(
+        expect.objectContaining({
+          id,
+          ...update,
+        }),
+      );
+    });
+
+    it("returns 404 when updating missing task", async () => {
+      const update: TaskPayload = {
+        name: "Updated Task",
+        slug: "updated-task",
+        description: "This task has been updated",
+        completed: true,
+        due_date: "2025-07-15T10:00:00.000Z",
+      };
+
+      const { res } = await http<any>("/tasks/9999", {
+        method: "PUT",
+        body: JSON.stringify(update),
+      });
+
+      expect(res.status).toBe(404);
+    });
+
+    it("returns 400 for invalid update payload", async () => {
+      const id = await seedTask({
+        name: "Task",
+        slug: "task",
+        description: "...",
+        completed: false,
+        due_date: "2025-01-01T00:00:00.000Z",
+      });
+
+      const { res } = await http<any>(`/tasks/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ name: "" }), // invalid
+      });
+
+      expect(res.status).toBe(400);
+    });
+  });
 
 
 
+  
 
-
+ 
 
   
 
