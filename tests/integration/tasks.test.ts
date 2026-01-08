@@ -241,6 +241,36 @@ describe("Tasks API (integration)", () => {
 
 
   
+ describe("DELETE /tasks/:id", () => {
+    it("deletes a task and confirms it is gone", async () => {
+      const id = await seedTask({
+        name: "Task to Delete",
+        slug: "task-to-delete",
+        description: "This task will be deleted",
+        completed: false,
+        due_date: "2025-08-01T00:00:00.000Z",
+      });
+
+      const del = await http<{ id: number }>(`/tasks/${id}`, { method: "DELETE" });
+
+      expect(del.res.status).toBe(200);
+      expect(del.json.success).toBe(true);
+      expect((del.json as ApiOk<{ id: number }>).result.id).toBe(id);
+
+      const after = await http<any>(`/tasks/${id}`);
+      expect(after.res.status).toBe(404);
+    });
+
+    it("returns 404 when deleting unknown id", async () => {
+      const { res, json } = await http<any>("/tasks/9999", { method: "DELETE" });
+
+      expect(res.status).toBe(404);
+      expect(json.success).toBe(false);
+      expect((json as ApiErr).errors[0]?.message).toBe("Not Found");
+    });
+  });
+});
+
 
  
 
