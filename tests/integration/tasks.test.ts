@@ -136,6 +136,38 @@ describe("Tasks API (integration)", () => {
   });
 
 
+  describe("GET /tasks/:id", () => {
+    it("fetches a task by id", async () => {
+      const payload: TaskPayload = {
+        name: "Specific Task",
+        slug: "specific-task",
+        description: "A task to be fetched by ID",
+        completed: false,
+        due_date: "2025-06-01T12:00:00.000Z",
+      };
+
+      const id = await seedTask(payload);
+
+      const { res, json } = await http<TaskRecord>(`/tasks/${id}`);
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+      expect((json as ApiOk<TaskRecord>).result).toEqual(
+        expect.objectContaining({
+          id,
+          ...payload,
+        }),
+      );
+    });
+
+    it("returns 404 for unknown id", async () => {
+      const { res, json } = await http<any>("/tasks/9999");
+
+      expect(res.status).toBe(404);
+      expect(json.success).toBe(false);
+      expect((json as ApiErr).errors[0]?.message).toBe("Not Found");
+    });
+  });
 
 
 
@@ -144,7 +176,9 @@ describe("Tasks API (integration)", () => {
 
 
 
+  
 
+ 
   
 
 
