@@ -13,6 +13,23 @@ type TaskPayload = {
   due_date: string; 
 };
 
+type TaskRecord = TaskPayload & { id: number };
 
+const BASE_URL = "http://local.test";
 
+async function http<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<{ res: Response; json: ApiEnvelope<T> }> {
+  const res = await SELF.fetch(`${BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init.headers || {}),
+    },
+  });
+
+  const json = (await res.json()) as ApiEnvelope<T>;
+  return { res, json };
+}
 
