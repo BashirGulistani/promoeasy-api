@@ -33,3 +33,34 @@ async function http<T>(
   return { res, json };
 }
 
+async function seedTask(overrides: Partial<TaskPayload> = {}): Promise<number> {
+  const payload: TaskPayload = {
+    name: "Seed Task",
+    slug: "seed-task",
+    description: "Seeded for tests",
+    completed: false,
+    due_date: "2025-01-01T00:00:00.000Z",
+    ...overrides,
+  };
+
+  const { res, json } = await http<TaskRecord>("/tasks", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  expect(res.status).toBe(201);
+  expect(json.success).toBe(true);
+
+  return (json as ApiOk<TaskRecord>).result.id;
+}
+
+
+
+
+
+
+
+
+
+
+
