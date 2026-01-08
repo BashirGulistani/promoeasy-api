@@ -55,9 +55,97 @@ async function seedTask(overrides: Partial<TaskPayload> = {}): Promise<number> {
 }
 
 
+describe("Tasks API (integration)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("GET /tasks", () => {
+    it("returns [] when there are no tasks", async () => {
+      const { res, json } = await http<TaskRecord[]>("/tasks");
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+      expect((json as ApiOk<TaskRecord[]>).result).toEqual([]);
+    });
+
+    it("returns one task after creation", async () => {
+      await seedTask({
+        name: "Test Task",
+        slug: "test-task",
+        description: "A task for testing",
+        completed: false,
+        due_date: "2025-01-01T00:00:00.000Z",
+      });
+
+      const { res, json } = await http<TaskRecord[]>("/tasks");
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+
+      const list = (json as ApiOk<TaskRecord[]>).result;
+      expect(list).toHaveLength(1);
+      expect(list[0]).toEqual(
+        expect.objectContaining({
+          name: "Test Task",
+          slug: "test-task",
+        }),
+      );
+    });
+  });
+
+  describe("POST /tasks", () => {
+    it("creates a task", async () => {
+      const payload: TaskPayload = {
+        name: "New Task",
+        slug: "new-task",
+        description: "A brand new task",
+        completed: false,
+        due_date: "2025-12-31T23:59:59.000Z",
+      };
+
+      const { res, json } = await http<TaskRecord>("/tasks", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      expect(res.status).toBe(201);
+      expect(json.success).toBe(true);
+      expect((json as ApiOk<TaskRecord>).result).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          ...payload,
+        }),
+      );
+    });
+
+    it("rejects invalid input with 400", async () => {
+      const badPayload = {
+        description: "Missing required fields",
+      };
+
+      const { res, json } = await http<any>("/tasks", {
+        method: "POST",
+        body: JSON.stringify(badPayload),
+      });
+
+      expect(res.status).toBe(400);
+      expect(json.success).toBe(false);
+      expect((json as ApiErr).errors).toBeInstanceOf(Array);
+    });
+  });
 
 
 
+
+
+
+
+
+
+
+
+  
 
 
 
